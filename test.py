@@ -6,6 +6,7 @@ from Signals_Testing import rolling_block_data_fcn,rolling_data_fcn, write
 from ML_functions import getBlendedSignal
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import preprocessing
+from sklearn.model_selection import TimeSeriesSplit
 
 
 DATA_PATH = "C:\Users\Frank Zhi\Downloads\Trading_Input.xlsx"
@@ -59,10 +60,11 @@ TAB_NAME = "deep_learning"
 file  = pd.ExcelFile(DATA_PATH)
 data = file.parse(TAB_NAME)
 
-data = data.fillna(0)
+data = data.dropna()
 
-ml_out = getBlendedSignal(data, RandomForestRegressor, gap=60)
+ml_out = getBlendedSignal(data, RandomForestRegressor, gap=500)
 
 ml_out = pd.DataFrame(ml_out)
 
+print(ml_out)
 write(ml_out,'ml_output.xlsx','rf')
