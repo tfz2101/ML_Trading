@@ -46,16 +46,18 @@ if a is b:
 
 
 '''LISTS'''
-#Combining lists
-a = [1,2,3]
-b = [4,5,6]
-a.extend(b)
-#print(a)
+class ListExamples():
+    def __init__(self):
+        self.a = [1, 2, 3]
+        self.b = [4, 5, 6]
 
-#Removing lists
-t = ['a','b','c']
-x = t.pop(0)
-#print(x)
+    def combineLists(self):
+        self.a.extend(b)
+        print(self.a)
+
+    def removeElement(self):
+        x = self.a.pop(0)
+        print(x)
 
 del t[0]
 #print(t)
