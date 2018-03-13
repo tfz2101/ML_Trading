@@ -86,3 +86,31 @@ def getBlendedSignal(data,ml_model, gap=60):
 
     #@RETURNS: [date, Y, Y_pred]
     return out
+
+
+
+def rollingMultivariateML(data, gap, fcn, **kwargs):
+    #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from latest to earliest
+    dates = data.index.values
+    Y = data.iloc[:,0].values
+    X = data.drop(data.columns[[0]],axis=1).values
+    out = []
+
+    for i in range(X.shape[0]-gap,0,-1):
+        X_ = X[(i+1):(i+gap)]
+        Y_ = Y[(i+1):(i+gap)]
+        X_test = X[i]
+        X_test = X_test.reshape(1,-1)
+        Y_test = Y[i]
+
+
+        #@FORMAT: fcn takes in
+        fcn_out = fcn(**kwargs)
+        # fcn must return a list of the data meant to be stored
+
+        line = [dates[i]].extend(fcn_out)
+
+        out.append([line])
+
+    #@RETURNS: df
+    return out
