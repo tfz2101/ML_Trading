@@ -265,13 +265,10 @@ print(s[::2])
 
 
 
-
 '''RANDOM CLASSES'''
 
 #Seed the random object so the same random numbers come up
 np.random.seed(1)
-
-
 
 
 
