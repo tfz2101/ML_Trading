@@ -11,6 +11,7 @@ from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.cross_validation import cross_val_score
 from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
 
 
 
@@ -114,3 +115,18 @@ def rollingMultivariateML(data, gap, fcn, **kwargs):
 
     #@RETURNS: df
     return out
+
+def crossValidate(X, Y, model_fcn, **model_kwargs):
+    x_train, x_test, y_train, y_test = train_test_split(X,Y, test_size=0.7, random_state="None", shuffle=False)
+    x_temp = x_test
+    x_test = x_train
+    x_train = x_temp
+
+    y_temp = y_test
+    y_test = y_train
+    y_train = y_temp
+
+    model = model_fcn(**model_kwargs).fit(x_train,y_train)
+
+    out = model.score(x_test, y_test)
+
