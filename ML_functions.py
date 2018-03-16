@@ -11,7 +11,7 @@ from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.cross_validation import cross_val_score
 from sklearn.decomposition import PCA
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 
 
@@ -91,42 +91,69 @@ def getBlendedSignal(data,ml_model, gap=60):
 
 
 def rollingMultivariateML(data, gap, fcn, **kwargs):
-    #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from latest to earliest
+    #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest
+
     dates = data.index.values
     Y = data.iloc[:,0].values
     X = data.drop(data.columns[[0]],axis=1).values
     out = []
 
-    for i in range(X.shape[0]-gap,0,-1):
-        X_ = X[(i+1):(i+gap)]
-        Y_ = Y[(i+1):(i+gap)]
-        X_test = X[i]
-        X_test = X_test.reshape(1,-1)
-        Y_test = Y[i]
+    for i in range(0,X.shape[0]-gap,1):
+        X_ = X[i:(i+gap)]
+        Y_ = Y[i:(i+gap)]
 
+        fcn_out = fcn(X_,Y_,**kwargs)
+        #@RETURNS: list
 
-        #@FORMAT: fcn takes in
-        fcn_out = fcn(**kwargs)
-        # fcn must return a list of the data meant to be stored
-
-        line = [dates[i]].extend(fcn_out)
+        line = [dates[i]] + fcn_out
 
         out.append([line])
 
-    #@RETURNS: df
+    #@RETURNS: df(dates, ouput1, output2, ...])
     return out
 
-def crossValidate(X, Y, model_fcn, **model_kwargs):
-    x_train, x_test, y_train, y_test = train_test_split(X,Y, test_size=0.7, random_state="None", shuffle=False)
-    x_temp = x_test
-    x_test = x_train
-    x_train = x_temp
 
-    y_temp = y_test
-    y_test = y_train
-    y_train = y_temp
+#Assumes the data goes from old to new (descending order). Splits the data and takes the data that is the NEWEST and uses it as the training set.
+#The model makes predictions on the test set and gives accuracy score.
+#Labels must be classification, not regression for the accuracy_score to work.
+def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
+    #@FORMAT: X = array, Y = array
+    trainSplit = 1- trainSplit
+
+    splitInd = int(X.shape[0] * trainSplit)
+    x_test = X[0:splitInd,:]
+    x_train = X[splitInd:X.shape[0],:]
+
+    y_test = Y[0:splitInd]
+    y_train = Y[splitInd:len(Y)]
+
+    model_kwargs = model_kwargs['model_kwargs']
+
 
     model = model_fcn(**model_kwargs).fit(x_train,y_train)
+    y_pred = model.predict(x_test)
 
-    out = model.score(x_test, y_test)
+    out = accuracy_score(y_pred, y_test)
 
+    #@RETURN: list
+    return [out]
+
+def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
+    #@FORMAT: X = array, Y = array
+    trainSplit = 1- trainSplit
+
+    splitInd = int(X.shape[0] * trainSplit)
+    x_test = X[0:splitInd,:]
+    x_train = X[splitInd:X.shape[0],:]
+
+    y_test = Y[0:splitInd]
+    y_train = Y[splitInd:len(Y)]
+
+    model_kwargs = model_kwargs['model_kwargs']
+
+
+    model = model_fcn(**model_kwargs).fit(x_train,y_train)
+    out = model.feature_importances_
+    print(out)
+    #@RETURN: list
+    return out
