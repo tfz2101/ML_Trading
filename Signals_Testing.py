@@ -293,6 +293,9 @@ class PCAAnalysis():
         #print(eigvec)
         #print(eigval)
 
+    def getComponents(self):
+        columns =  self.data.columns.values
+        return pd.DataFrame(self.pca_components, columns=columns)
 
     def createLinearComponent(self):
         #Need to run getPCA() first
