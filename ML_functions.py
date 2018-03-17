@@ -12,8 +12,18 @@ from sklearn import linear_model as LM
 from sklearn.cross_validation import cross_val_score
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
 
 
+def normalizeDF(df):
+    columns =  df.columns.values
+    index = df.index.values
+    scaler = StandardScaler(copy=False,with_mean=True,with_std=True)
+    scaler.fit(df)
+
+    df =  scaler.transform(df)
+    df = pd.DataFrame(df,columns=columns,index=index)
+    return df
 
 #Kmeans - returns cluster number and silhouette score
 def kmeans_s_scores(data):
@@ -89,7 +99,7 @@ def getBlendedSignal(data,ml_model, gap=60):
     return out
 
 
-
+#Main ML rollthrough time method
 def rollingMultivariateML(data, gap, fcn, **kwargs):
     #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest
 
@@ -118,6 +128,7 @@ def rollingMultivariateML(data, gap, fcn, **kwargs):
 #Labels must be classification, not regression for the accuracy_score to work.
 def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@FORMAT: X = array, Y = array
+
     trainSplit = 1- trainSplit
 
     splitInd = int(X.shape[0] * trainSplit)
@@ -129,8 +140,8 @@ def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
 
     model_kwargs = model_kwargs['model_kwargs']
 
+    model = model_fcn(**model_kwargs).fit(x_train, y_train)
 
-    model = model_fcn(**model_kwargs).fit(x_train,y_train)
     y_pred = model.predict(x_test)
 
     out = accuracy_score(y_pred, y_test)
@@ -157,3 +168,5 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     print(out)
     #@RETURN: list
     return out
+
+
