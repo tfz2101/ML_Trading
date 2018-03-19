@@ -169,6 +169,7 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@RETURN: list
     return out
 
+#Combines the crossValidates function as well as gives a prediction for the last X row
 def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     X_train = X[0:(X.shape[0]-1),:]
     X_target = X[X.shape[0]-1,:]
@@ -185,3 +186,10 @@ def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     print(out)
     return out
 
+
+def MDI(X, Y):
+    #@FORMAT: X = df, Y = df
+    features = X.columns.values.tolist()
+    for feature in features:
+        pass
+    
