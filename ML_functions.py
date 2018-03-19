@@ -169,4 +169,19 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@RETURN: list
     return out
 
+def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
+    X_train = X[0:(X.shape[0]-1),:]
+    X_target = X[X.shape[0]-1,:]
+    Y_train = Y[0:(len(Y) - 1)]
+    Y_target = Y[Y.shape[0] - 1]
+
+    model = model_fcn(**model_kwargs).fit(X_train,Y_train)
+    pred = model.predict(X_target)
+    print(pred)
+
+    past_accuracy = crossValidate(X_train, Y_train, trainSplit, model_fcn, **model_kwargs)
+
+    out =  past_accuracy + pred
+    print(out)
+    return out
 
