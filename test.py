@@ -5,10 +5,12 @@ from scipy.stats import kurtosis
 from Signals_Testing import rolling_block_data_fcn,rolling_data_fcn, write
 from ML_functions import getBlendedSignal
 from ML_functions import crossValidate
-from sklearn.ensemble import RandomForestRegressor
-from sklearn import preprocessing
-from sklearn.model_selection import TimeSeriesSplit
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from ML_functions import normalizeDF
+from ML_functions import featureImportance
+from Signals_Testing import PCAAnalysis
+from ML_functions import getPredictionandCrossValidate
 '''
 DATA_PATH = "Trading_Input.xlsx"
 TAB_NAME = "momentum_data"
@@ -57,19 +59,35 @@ pnl = pd.DataFrame(pnl)
 
 '''
 
-DATA_PATH = "Trading_Input.xlsx"
-TAB_NAME = "Sheet1"
+DATA_PATH = "C:\Users\Frank Zhi\Downloads\Trading_Input.xlsx"
+TAB_NAME = "trading_input"
 file  = pd.ExcelFile(DATA_PATH)
 data = file.parse(TAB_NAME)
 
 data = data.dropna()
 
-ml_out = getBlendedSignal(data, RandomForestRegressor, gap=500)
+#ml_out = getBlendedSignal(data, RandomForestClassifier, gap=500)
 
-ml_out = pd.DataFrame(ml_out)
+#ml_out = pd.DataFrame(ml_out)
 
 #write(ml_out,'ml_output.xlsx','rf')
 
-X = data.drop(['tenyear','change'])
-Y = data['change']
-score = crossValidate(X,Y,RandomForestRegressor)
+X = data.drop(['tenyear','change','target'],axis=1)
+X = normalizeDF(X)
+
+pca = PCAAnalysis(X)
+pca.getPCA(7)
+print(pca.getComponents())
+
+Y = data['target']
+
+X = X.values
+Y = Y.values
+
+
+model_kwargs = {'model_kwargs':{'n_estimators': 5, 'max_features': int(1)}}
+FI = featureImportance(X,Y,0.7,RandomForestClassifier,**model_kwargs)
+
+score = crossValidate(X,Y,0.7,RandomForestClassifier,**model_kwargs)
+
+score_cv =  getPredictionandCrossValidate(X, Y, 0.7, RandomForestClassifier, **model_kwargs)
