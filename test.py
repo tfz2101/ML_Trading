@@ -3,8 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import kurtosis
 from Signals_Testing import rolling_block_data_fcn,rolling_data_fcn, write
-from ML_functions import getBlendedSignal
-from ML_functions import crossValidate, rollingMultivariateML, featureImportance
+from ML_functions import getBlendedSignal,crossValidate, rollingMultivariateML, featureImportance, getPredictionandCrossValidate
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
 
@@ -92,5 +91,8 @@ kwargs = {'trainSplit':0.7, 'model_fcn': RandomForestClassifier, 'model_kwargs':
 scores = rollingMultivariateML(dataML,100,crossValidate, **kwargs)
 print(scores)
 
-FIs = rollingMultivariateML(dataML,100,featureImportance, **kwargs)
-print(FIs)
+#FIs = rollingMultivariateML(dataML,100,featureImportance, **kwargs)
+#print(FIs)
+
+
+cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
