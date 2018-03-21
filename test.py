@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import kurtosis
 from Signals_Testing import rolling_block_data_fcn,rolling_data_fcn, write
-from ML_functions import getBlendedSignal,crossValidate, rollingMultivariateML, featureImportance, getPredictionandCrossValidate
+from ML_functions import getBlendedSignal,crossValidate, rollingMultivariateML, featureImportance, getPredictionandCrossValidate, MDI
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
 
@@ -76,6 +76,9 @@ data = data.dropna()
 X = data.drop(['tenyear','upordown','change'],axis=1)
 Y = data['upordown']
 
+X_df = X
+Y_df = Y
+
 X = X.values
 Y = Y.values
 
@@ -84,15 +87,17 @@ Y = Y.values
 
 dataML = data.drop(['tenyear','change'],axis=1)
 
-model_kwargs = {'n_estimators':5}
+model_kwargs = {'n_estimators':1}
 #score = crossValidate(X,Y,0.7,RandomForestClassifier,**model_kwargs)
 
 kwargs = {'trainSplit':0.7, 'model_fcn': RandomForestClassifier, 'model_kwargs': model_kwargs}
-scores = rollingMultivariateML(dataML,100,crossValidate, **kwargs)
-print(scores)
+#scores = rollingMultivariateML(dataML,100,crossValidate, **kwargs)
 
 #FIs = rollingMultivariateML(dataML,100,featureImportance, **kwargs)
 #print(FIs)
 
 
 cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
+
+mdi = MDI(X_df, Y_df, 0.7, RandomForestClassifier, **model_kwargs)
+

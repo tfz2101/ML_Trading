@@ -123,47 +123,68 @@ def rollingMultivariateML(data, gap, fcn, **kwargs):
     return out
 
 
+def trainTestSplit(X, Y, trainSplit):
+    #@FORMAT: X = array, Y = array
+
+    trainSplit = 1- trainSplit
+
+
+    splitInd = int(X.shape[0] * trainSplit)
+    try:
+        x_test = X[0:splitInd,:]
+        x_train = X[splitInd:X.shape[0],:]
+    except:
+        x_test = X[0:splitInd]
+        x_test = x_test.reshape(-1,1)
+        x_train = X[splitInd:len(X)]
+        x_train = x_train.reshape(-1,1)
+
+
+    y_test = Y[0:splitInd]
+    y_train = Y[splitInd:len(Y)]
+    return x_train, x_test, y_train, y_test
+
+
 #Assumes the data goes from old to new (descending order). Splits the data and takes the data that is the NEWEST and uses it as the training set.
 #The model makes predictions on the test set and gives accuracy score.
 #Labels must be classification, not regression for the accuracy_score to work.
 def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@FORMAT: X = array, Y = array
 
-    trainSplit = 1- trainSplit
 
-    splitInd = int(X.shape[0] * trainSplit)
-    x_test = X[0:splitInd,:]
-    x_train = X[splitInd:X.shape[0],:]
+    x_train, x_test, y_train, y_test = trainTestSplit(X,Y, trainSplit)
 
-    y_test = Y[0:splitInd]
-    y_train = Y[splitInd:len(Y)]
 
-    model_kwargs = model_kwargs['model_kwargs']
 
-    model = model_fcn(**model_kwargs).fit(x_train, y_train)
+    try:
+        model = model_fcn(**model_kwargs).fit(x_train, y_train)
+
+    except:
+        #model_kwargs = model_kwargs['model_kwargs']
+
+        #model = model_fcn(**model_kwargs).fit(x_train, y_train)
+        model = model_fcn().fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
-
     out = accuracy_score(y_pred, y_test)
 
     #@RETURN: list
     return [out]
 
+
+#Takes a train/test split of the X and Y and spits back the feature importance of the features
 def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@FORMAT: X = array, Y = array
-    trainSplit = 1- trainSplit
-
-    splitInd = int(X.shape[0] * trainSplit)
-    x_test = X[0:splitInd,:]
-    x_train = X[splitInd:X.shape[0],:]
-
-    y_test = Y[0:splitInd]
-    y_train = Y[splitInd:len(Y)]
+    x_train, x_test, y_train, y_test = trainTestSplit(X, Y, trainSplit)
 
     model_kwargs = model_kwargs['model_kwargs']
 
+    try:
+        model = model_fcn(**model_kwargs).fit(x_train, y_train)
+    except:
+        model_kwargs = model_kwargs['model_kwargs']
+        model = model_fcn(**model_kwargs).fit(x_train, y_train)
 
-    model = model_fcn(**model_kwargs).fit(x_train,y_train)
     out = model.feature_importances_
     print(out)
     #@RETURN: list
@@ -176,7 +197,12 @@ def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     Y_train = Y[0:(len(Y) - 1)]
     Y_target = Y[Y.shape[0] - 1]
 
-    model = model_fcn(**model_kwargs).fit(X_train,Y_train)
+    try:
+        model = model_fcn(**model_kwargs).fit(X_train, Y_train)
+    except:
+        model_kwargs = model_kwargs['model_kwargs']
+        model = model_fcn(**model_kwargs).fit(Y_train, Y_train)
+
     pred = model.predict(X_target)
     print(pred)
 
@@ -186,10 +212,14 @@ def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     print(out)
     return out
 
-
-def MDI(X, Y):
+#Iterates through the features one by one and gives the accuracy of each feature
+def MDI(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@FORMAT: X = df, Y = df
     features = X.columns.values.tolist()
+    Y = Y.values
     for feature in features:
-        pass
+        X_ = X[feature].values
+        score = crossValidate(X_,Y,trainSplit, model_fcn, **model_kwargs)
+        print(feature,score)
+
     

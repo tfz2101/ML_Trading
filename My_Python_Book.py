@@ -50,6 +50,7 @@ class ListExamples():
     def __init__(self):
         self.a = [1, 2, 3]
         self.b = [4, 5, 6]
+        self.t = ['t','a','c','f']
 
     def combineLists(self):
         self.a.extend(b)
@@ -59,11 +60,12 @@ class ListExamples():
         x = self.a.pop(0)
         print(x)
 
-del t[0]
-#print(t)
+    def deleteElement(self):
+        del self.a[0]
 
-t.remove('c')
-#print(t)
+    def deleteElementByName(self):
+        self.t.remove('c')
+        print(t)
 
 #Sort
 b = np.array([[1,2,3], [4,5,6], [7,8,9]])
@@ -310,14 +312,22 @@ print(MyClass.__class__.__base__)
 
 
 '''NUMPY'''
-#initialization
-a  = np.array(([1,3,4],[5,22,4],[11,232,2]))
-b = np.empty([10,2])
-b = np.zeros([10,2])
-#print(b)
 
-#Shape
-#print(a.shape[0])
+class myNumpy():
+
+    def __init__(self):
+        self.b = np.array([[1,2,3],[3,4,5]])
+
+    def initializeNumpys(self):
+        a  = np.array(([1,3,4],[5,22,4],[11,232,2]))
+        b = np.empty([10,2])
+        b = np.zeros([10,2])
+        print(b)
+
+    #Reshape using -1. You can reshape a array into a one-dimensinal array using reshape(-1,1) because
+    #the 1 specifies 1 column and the -1 will automatically determine the other dimension to match the data
+    def reshape(self):
+        print(self.b.reshape(1,-1))
 
 #Convert into array, nothin if already array
 c = np.asanyarray(a)
