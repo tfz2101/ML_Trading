@@ -151,10 +151,7 @@ def trainTestSplit(X, Y, trainSplit):
 def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@FORMAT: X = array, Y = array
 
-
     x_train, x_test, y_train, y_test = trainTestSplit(X,Y, trainSplit)
-
-
 
     try:
         model = model_fcn(**model_kwargs).fit(x_train, y_train)
@@ -177,8 +174,6 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@FORMAT: X = array, Y = array
     x_train, x_test, y_train, y_test = trainTestSplit(X, Y, trainSplit)
 
-    model_kwargs = model_kwargs['model_kwargs']
-
     try:
         model = model_fcn(**model_kwargs).fit(x_train, y_train)
     except:
@@ -186,7 +181,7 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
         model = model_fcn(**model_kwargs).fit(x_train, y_train)
 
     out = model.feature_importances_
-    print(out)
+
     #@RETURN: list
     return out
 
