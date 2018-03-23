@@ -94,10 +94,11 @@ kwargs = {'trainSplit':0.7, 'model_fcn': RandomForestClassifier, 'model_kwargs':
 #scores = rollingMultivariateML(dataML,100,crossValidate, **kwargs)
 
 FIs = featureImportance(X,Y,0.7,RandomForestClassifier,**model_kwargs)
-print(FIs)
+#print(FIs)
 
 
-#cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
+cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
+write(pd.DataFrame(cv_pred),"output_2.xlsx","pred_and_backtest")
 
-mdi = MDI(X_df, Y_df, 0.7, RandomForestClassifier, **model_kwargs)
+#mdi = MDI(X_df, Y_df, 0.7, RandomForestClassifier, **model_kwargs)
 

@@ -15,6 +15,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 
 
+#PREPROCESSING
+#-----------------------------------------------------------------------------------------------------------
 def normalizeDF(df):
     columns =  df.columns.values
     index = df.index.values
@@ -24,6 +26,8 @@ def normalizeDF(df):
     df =  scaler.transform(df)
     df = pd.DataFrame(df,columns=columns,index=index)
     return df
+
+
 
 #Kmeans - returns cluster number and silhouette score
 def kmeans_s_scores(data):
@@ -62,7 +66,7 @@ def kmeans_best_fit_cluster_labels(data):
 
 
 #Rolling ML Methods
-
+#---------------------------------------------------------------------------------------
 def getSKLearnModel(Y,X,model,**kwargs):
     model = model(**kwargs)
     model.fit(X,Y)
@@ -185,8 +189,10 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     #@RETURN: list
     return out
 
-#Combines the crossValidates function as well as gives a prediction for the last X row
+#Combines the crossValidates function as well as gives a prediction for the last X row. Answers the question - if a ML
+#function has been pretty accurate in OOS backtest, does it a better predictor for this current row?
 def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
+    #@FORMAT: X = array, Y = array
     X_train = X[0:(X.shape[0]-1),:]
     X_target = X[X.shape[0]-1,:]
     X_target = X_target.reshape(1,-1)
@@ -204,6 +210,8 @@ def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     past_accuracy = crossValidate(X_train, Y_train, trainSplit, model_fcn, **model_kwargs)
 
     out =  past_accuracy + [pred[0]] + [Y_target]
+
+    #@RETURN: list[past_accuracy, prediction, actual_Y]
     return out
 
 #Iterates through the features one by one and gives the accuracy of each feature
