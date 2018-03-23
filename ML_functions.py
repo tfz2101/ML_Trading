@@ -189,22 +189,21 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
 def getPredictionandCrossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     X_train = X[0:(X.shape[0]-1),:]
     X_target = X[X.shape[0]-1,:]
+    X_target = X_target.reshape(1,-1)
     Y_train = Y[0:(len(Y) - 1)]
-    Y_target = Y[Y.shape[0] - 1]
+    Y_target = Y[len(Y) - 1]
 
     try:
         model = model_fcn(**model_kwargs).fit(X_train, Y_train)
     except:
         model_kwargs = model_kwargs['model_kwargs']
-        model = model_fcn(**model_kwargs).fit(Y_train, Y_train)
+        model = model_fcn(**model_kwargs).fit(X_train, Y_train)
 
     pred = model.predict(X_target)
-    print(pred)
 
     past_accuracy = crossValidate(X_train, Y_train, trainSplit, model_fcn, **model_kwargs)
 
-    out =  past_accuracy + pred
-    print(out)
+    out =  past_accuracy + [pred[0]] + [Y_target]
     return out
 
 #Iterates through the features one by one and gives the accuracy of each feature
