@@ -72,32 +72,43 @@ data = file.parse(TAB_NAME)
 
 
 
-X = data.drop(['tenyear','upordown','change'],axis=1)
-Y = data['upordown']
+#X = data.drop(['tenyear','upordown','change'],axis=1)
+#Y = data['upordown']
 
+cur_data = data.loc[:,['KURTOSIS_30','SKEW','CUR_OVER_MA10','Y_1']]
+cur_data = cur_data.dropna()
+
+
+X = cur_data.drop('Y_1',axis=1)
+print(X)
+
+Y = cur_data['Y_1']
+print(Y)
 X_df = X
 Y_df = Y
 
 X = X.values
 Y = Y.values
 
+
+
 #X = np.array([[1,2,3],[4,5,6],[7,8,9],[10,11,12]])
 #Y = np.array([100,101,102,103])
 
-dataML = data.drop(['tenyear','change'],axis=1)
+#dataML = data.drop(['tenyear','change'],axis=1)
 
-model_kwargs = {'n_estimators':1}
+model_kwargs = {'n_estimators':2}
 #score = crossValidate(X,Y,0.7,RandomForestClassifier,**model_kwargs)
 
 kwargs = {'trainSplit':0.7, 'model_fcn': RandomForestClassifier, 'model_kwargs': model_kwargs}
 #scores = rollingMultivariateML(dataML,100,crossValidate, **kwargs)
 
 FIs = featureImportance(X,Y,0.7,RandomForestClassifier,**model_kwargs)
-#print(FIs)
+print(FIs)
 
 
-cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
-write(pd.DataFrame(cv_pred),"output_2.xlsx","pred_and_backtest")
+#cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
+#write(pd.DataFrame(cv_pred),"output_2.xlsx","pred_and_backtest")
 
 #mdi = MDI(X_df, Y_df, 0.7, RandomForestClassifier, **model_kwargs)
 

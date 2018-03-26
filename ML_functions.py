@@ -161,9 +161,6 @@ def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
         model = model_fcn(**model_kwargs).fit(x_train, y_train)
 
     except:
-        #model_kwargs = model_kwargs['model_kwargs']
-
-        #model = model_fcn(**model_kwargs).fit(x_train, y_train)
         model = model_fcn().fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
@@ -181,8 +178,11 @@ def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
     try:
         model = model_fcn(**model_kwargs).fit(x_train, y_train)
     except:
-        model_kwargs = model_kwargs['model_kwargs']
-        model = model_fcn(**model_kwargs).fit(x_train, y_train)
+        #@TODO:**KWARGS ARE NOT BEING PASSED IF EXCEPTION IS THROWN, FIX THIS!
+        #model_kwargs = model_kwargs['model_kwargs']
+        #model = model_fcn(**model_kwargs).fit(x_train, y_train)
+        model = model_fcn().fit(x_train, y_train)
+
 
     out = model.feature_importances_
 
