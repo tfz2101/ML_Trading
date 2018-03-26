@@ -57,11 +57,10 @@ pnl = pd.DataFrame(pnl)
 
 '''
 DATA_PATH = "Trading_Input.xlsx"
-TAB_NAME = "Sheet1"
+TAB_NAME = "ETH_5MIN"
 file  = pd.ExcelFile(DATA_PATH)
 data = file.parse(TAB_NAME)
 
-data = data.dropna()
 
 
 #ml_out = getBlendedSignal(data, RandomForestRegressor, gap=500)

@@ -11,6 +11,7 @@ from statsmodels.tsa.stattools import acf,pacf, adfuller
 from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
+from Stat_Fcns import dickeyfuller_fcn,acf_fcn_highestlag,acf_fcn_highestlag_P_Val,rl_fcn
 
 #Kalman Filter
 '''
