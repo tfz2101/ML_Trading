@@ -75,14 +75,14 @@ data = file.parse(TAB_NAME)
 #X = data.drop(['tenyear','upordown','change'],axis=1)
 #Y = data['upordown']
 
-cur_data = data.loc[:,['KURTOSIS_30','SKEW','CUR_OVER_MA10','Y_1']]
+cur_data = data.loc[:,['KURTOSIS_30','SKEW','CUR_OVER_MA10','Y_1_CLASSIFICATION']]
 cur_data = cur_data.dropna()
 
 
-X = cur_data.drop('Y_1',axis=1)
+X = cur_data.drop('Y_1_CLASSIFICATION',axis=1)
 print(X)
 
-Y = cur_data['Y_1']
+Y = cur_data['Y_1_CLASSIFICATION']
 print(Y)
 X_df = X
 Y_df = Y
