@@ -81,22 +81,25 @@ def getCrossValScore(model,Y,X,folds=5):
     return scores
 
 #Fits a ML model on a rolling basis for a given lookback and makes an prediction based on it for time T
-def getBlendedSignal(data,ml_model, gap=60):
-    #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from latest to earliest
+def getBlendedSignal(data,ml_model, gap=60,**kwargs):
+    #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest
     dates = data.index.values
     Y = data.iloc[:,0].values
     X = data.drop(data.columns[[0]],axis=1).values
     out = []
 
-    for i in range(X.shape[0]-gap,0,-1):
-        X_ = X[(i+1):(i+gap)]
-        Y_ = Y[(i+1):(i+gap)]
+    for i in range(gap,X.shape[0],1):
+        X_ = X[(i-gap):i]
+        Y_ = Y[(i-gap):i]
         X_test = X[i]
         X_test = X_test.reshape(1,-1)
         Y_test = Y[i]
 
-        model = getSKLearnModel(Y_,X_, ml_model)
-        pred = getSKLearnModelPredictions(model,X_test)
+        #model = ml_model(**kwargs)
+        model = ml_model()
+        model.fit(X_, Y_)
+
+        pred = model.predict(X_test)
         out.append([dates[i],Y_test,pred[0]])
 
     #@RETURNS: [date, Y, Y_pred]
