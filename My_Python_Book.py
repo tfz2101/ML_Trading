@@ -134,6 +134,10 @@ end = pd.Timestamp(datetime.datetime(2012,1,1))
 diff = end - start
 print(diff.days)
 
+#Change a datetime by a period
+start = datetime.datetime.now()
+period = datetime.timedelta(seconds=60)
+end = start + period
 
 
 '''PANDAS'''

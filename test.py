@@ -52,17 +52,15 @@ def sharpe_ratio(pnl):
 
 pnl = rolling_block_data_fcn(data,sharpe_ratio,gap=30)
 pnl = pd.DataFrame(pnl)
-
-
-
 '''
+
+
 DATA_PATH = "Trading_Input.xlsx"
-TAB_NAME = "ml_input"
+TAB_NAME = "ml_input_3"
 file  = pd.ExcelFile(DATA_PATH)
 data = file.parse(TAB_NAME)
 
-
-cur_data = data.loc[:,['Y_5','KURTOSIS_30','SKEW','volume_zscore','ma_signal','interval_range_pct_px','num_tics_z_score']]
+cur_data = data.loc[:,['Y_5','KURTOSIS_30','SKEW','volume_zscore','volume_signal','signal','interval_range_pct_px','num_tics_z_score']]
 cur_data = cur_data.dropna()
 
 X = cur_data.drop('Y_5',axis=1)
@@ -70,7 +68,17 @@ Y = cur_data['Y_5']
 
 X_norm = normalizeDF(X)
 cur_data = pd.concat([Y,X_norm],axis=1)
-print(cur_data)
+
+
+ml_out = getBlendedSignal(cur_data, RandomForestRegressor, gap=150)
+ml_out = pd.DataFrame(ml_out)
+write(ml_out,'ml_output3.xlsx','rf')
+
+
+
+
+
+
 
 X_df = X
 Y_df = Y
@@ -90,9 +98,3 @@ kwargs = {'trainSplit':0.7, 'model_fcn': RandomForestClassifier, 'model_kwargs':
 #cv_pred = rollingMultivariateML(dataML,100,getPredictionandCrossValidate, **kwargs)
 
 #mdi = MDI(X_df, Y_df, 0.7, RandomForestClassifier, **model_kwargs)
-
-ml_out = getBlendedSignal(cur_data, RandomForestRegressor, gap=150)
-
-ml_out = pd.DataFrame(ml_out)
-
-write(ml_out,'ml_output.xlsx','rf')
