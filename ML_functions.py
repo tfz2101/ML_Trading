@@ -9,7 +9,6 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from operator import itemgetter
 from sklearn import linear_model as LM
-from sklearn.cross_validation import cross_val_score
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
@@ -75,10 +74,6 @@ def getSKLearnModel(Y,X,model,**kwargs):
 def getSKLearnModelPredictions(model, X_test):
     Y_test = model.predict(X_test)
     return Y_test
-
-def getCrossValScore(model,Y,X,folds=5):
-    scores = cross_val_score(model,X,Y,cv=folds)
-    return scores
 
 #Fits a ML model on a rolling basis for a given lookback and makes an prediction based on it for time T
 def getBlendedSignal(data,ml_model, gap=60,**kwargs):
