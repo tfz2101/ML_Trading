@@ -14,7 +14,7 @@ TAB_NAME = "ml_input"
 file  = pd.ExcelFile(DATA_PATH)
 orig_data = file.parse(TAB_NAME)
 
-raw_cur_data = orig_data.loc[:,['Y_5','KURTOSIS_30','SKEW','volume_zscore','volume_signal','signal','interval_range_pct_px','num_tics_z_score']]
+raw_cur_data = orig_data.loc[:,['Y_5','KURTOSIS_30','SKEW','volume_zscore','volume_signal','signal','interval_range_pct_px','num_tics_z_score','VWAP_Diff_Zscore']]
 cur_data = raw_cur_data.dropna()
 
 X = cur_data.drop('Y_5',axis=1)
