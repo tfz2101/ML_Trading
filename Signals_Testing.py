@@ -135,6 +135,16 @@ def rolling_data_fcn(data,fcn,gap=5,*args,**kwargs):
         out.append([dates[i],stat])
     return out
 
+def rolling_data_fcn2(data,fcn,gap=5,*args,**kwargs):
+    #@FORMAT: data = np.array
+    out = np.empty([data.shape[0],1])
+    out[:] = np.nan
+    for i in range(0,data.shape[0],1):
+        block_values = data[i:i+gap]
+        stat = fcn(block_values,**kwargs)
+        out.append([stat])
+    return out
+
 
 
 #Returns rolling stats for dickey fuller test, p val for the best fit lag for ACF, realized volatility,
