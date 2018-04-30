@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import kurtosis
 from Signals_Testing import rolling_block_data_fcn,rolling_data_fcn, write
-from ML_functions import getBlendedSignal,crossValidate, rollingMultivariateML, featureImportance, getPredictionandCrossValidate, MDI,normalizeDF
+from ML_functions import getBlendedSignal,crossValidate, rollingMultivariateML, featureImportance, getPredictionandCrossValidate, MDI,normalizeDF,getBlendedSignalKeepColumns
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn import preprocessing
 
@@ -55,7 +55,7 @@ pnl = pd.DataFrame(pnl)
 '''
 
 
-DATA_PATH = "Trading_Input.xlsx"
+DATA_PATH = "Trading_Input_Post_Crash.xlsx"
 TAB_NAME = "ml_input_3"
 file  = pd.ExcelFile(DATA_PATH)
 data = file.parse(TAB_NAME)
@@ -86,19 +86,19 @@ for feature in features:
     write(ml_out,OUT_FILE,'rf')
 '''
 
-cur_data = data.loc[:,['Y_5', 'KURTOSIS_30', 'SKEW', 'volume_zscore', 'volume_signal', 'signal', 'interval_range_pct_px','VWAP_Diff_Zscore','num_tics_z_score']]
+cur_data = data.loc[:,['Y_5', 'LAST_PRICE', 'KURTOSIS_30', 'SKEW', 'volume_zscore', 'volume_signal', 'signal', 'interval_range_pct_px','VWAP_Diff_Zscore']]
+
 cur_data = cur_data.dropna()
-
-X = cur_data.drop('Y_5', axis=1)
+print(cur_data)
+X = cur_data.drop(['Y_5','LAST_PRICE'], axis=1)
 Y = cur_data['Y_5']
-
+px_col = cur_data['LAST_PRICE']
 X_norm = normalizeDF(X)
-cur_data = pd.concat([Y, X_norm], axis=1)
+cur_data = pd.concat([Y, X_norm, px_col], axis=1)
 
-ml_out = getBlendedSignal(cur_data, RandomForestRegressor, gap=150)
+ml_out = getBlendedSignalKeepColumns(cur_data,'LAST_PRICE',RandomForestRegressor, gap=25)
 ml_out = pd.DataFrame(ml_out)
-
-write(ml_out, 'ml_output3.xlsx', 'rf')
+write(ml_out, 'ml_output_with_25_lookback.xlsx', 'rf')
 
 
 
