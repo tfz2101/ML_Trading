@@ -85,7 +85,9 @@ def getBlendedSignal(data,ml_model, gap=60,**kwargs):
 
     for i in range(gap,X.shape[0],1):
         X_ = X[(i-gap):i]
+        print('X TRAIN',X_)
         Y_ = Y[(i-gap):i]
+        print('Y_ TRAIN',Y_)
         X_test = X[i]
         X_test = X_test.reshape(1,-1)
         Y_test = Y[i]
@@ -110,14 +112,20 @@ def getBlendedSignalKeepColumns(data,colKeepName,ml_model, gap=60,**kwargs):
     keepCol = X[colKeepName].values
     X = X.drop([colKeepName],axis=1).values
 
-
-    for i in range(gap,X.shape[0],1):
+    #TODO: CHANGE THE END POINT BACK!!!1
+    #for i in range(gap,X.shape[0],1):
+    for i in range(gap,3,1):
         X_ = X[(i-gap):i]
+        print('date',dates[i-gap])
+        print('X_ ',X_)
         Y_ = Y[(i-gap):i]
+        print('Y)',Y_)
+        print('date',dates[i])
         X_test = X[i]
         X_test = X_test.reshape(1,-1)
         Y_test = Y[i]
-
+        print('X TEST',X_test)
+        print('Y TEST',Y_test)
         #model = ml_model(**kwargs)
         model = ml_model()
         model.fit(X_, Y_)
