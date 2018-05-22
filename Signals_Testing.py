@@ -197,6 +197,20 @@ def calcSignalCorrelation(data):
     return corr, 1.0*newData.shape[0]/data.shape[0]
 
 
+#Gets price/volume data into a series incrementing by a fixed volume, not by a fixed interval
+'''
+def getPriceDataFixedVolume(data, fixedVolume):
+   #@FORMAT: data = df(price, trade_volume, index=dates/time)
+   pxInd = 0
+   volInd = 1
+   data2 = data.copy()
+   out = []
+   for i in range(data.shape[0]):
+       while data2.iloc[i,volInd] < fixedVolume:
+           data2.iloc[i, volInd] =
+       out.append(data.index.values[i], )
+'''
+
 
 
 def write(datadf, path, tab="Sheet1"):
