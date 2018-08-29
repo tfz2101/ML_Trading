@@ -98,11 +98,11 @@ def rl_fcn(data):
 
 class PCAAnalysis():
     def __init__(self, data):
+        # @FORMAT: data = df(X1, X2, X3, etc, index=dates)
         self.data = data
         self.X = self.data.values
 
     def getPCA(self,n_components):
-        #@FORMAT: data = df(data,index=dates)
         data = self.data
         X = data.values
         pca = PCA(n_components)
