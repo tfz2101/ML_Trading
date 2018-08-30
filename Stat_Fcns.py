@@ -11,7 +11,12 @@ from statsmodels.tsa.stattools import acf,pacf, adfuller
 from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
+from scipy.stats import anderson
 
+def adTest(data):
+    #@FORMAT: data = np(values)
+    stat, critical_val, sig_level = anderson(data)
+    return stat, critical_val, sig_level
 
 #Calcs p values and correlations for all lags
 def acf_fcn(data,lags=2,alpha=.05):
@@ -84,14 +89,6 @@ def pp_test_fcn(data,maxlag):
         return pp_fcn.pvalue
     except:
         return np.nan
-
-
-
-#Calcs realized volatility
-def rl_fcn(data):
-    #@FORMAT: data = np(values)
-    rl = np.std(data)
-    return rl
 
 
 

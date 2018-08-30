@@ -11,43 +11,8 @@ from statsmodels.tsa.stattools import acf,pacf, adfuller
 from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
-from Stat_Fcns import dickeyfuller_fcn,acf_fcn_highestlag,acf_fcn_highestlag_P_Val,rl_fcn
+from Stat_Fcns import dickeyfuller_fcn,acf_fcn_highestlag,acf_fcn_highestlag_P_Val
 
-#Kalman Filter
-'''
-tau = 0.1
-kf = KalmanFilter(n_dim_obs=1,n_dim_state=2,
-                  initial_state_mean=starting_point,
-                  initial_state_covariance=np.eye(2),
-                  transition_matrices=[[1,tau],[0,1]],
-                  observation_matrices=[[1,0]],
-                  observation_covariance=3,
-                  transition_covariance=np.zeros((2,2)),
-                  transition_offsets=[0,0])
-
-
-np_data = tst_data["10y Close"].values
-
-state_means, state_covs = kf.filter(np_data)
-#tst_data['kf_predict']=pd.Series(state_means[:,0])
-#print(state_means.shape)
-
-
-times = np.arange(tst_data.shape[0])
-plt.plot(times, state_means[:,0])
-plt.plot(times, tst_data["10y Close"])
-
-#plt.show()
-
-
-tst_data['KF_Value']=state_means[:,0]
-print("tst data",tst_data)
-
-WRITE_PATH = "L:\Trade_Output.xlsx"
-writer = pd.ExcelWriter(WRITE_PATH, engine='xlsxwriter')
-tst_data.to_excel(writer, sheet_name='Data')
-writer.save()
-'''
 
 #Computes hit ratio for rolling n trades
 def getLastNHitRatio(data, n, hitInd, acceptableValues=[0,1]):
