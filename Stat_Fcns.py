@@ -38,15 +38,6 @@ def acf_fcn_only_cor(data,lags=2,alpha=.05):
 
 
 
-#Calcs only correlations, get only the ith lags
-def acf_fcn_ith_cor(data,ith=2,lags=4,alpha=.05):
-    #@FORMAT: data = np(values)
-    try:
-        result = acf_fcn_only_cor(data,lags, alpha)
-        return result[ith]
-    except:
-        return [np.nan]
-
 
 
 #Calcs the p value for for the best fit lag
@@ -72,14 +63,6 @@ def acf_fcn_highestlag_P_Val(data,lags,alpha=.05):
     return ordered_arr[0]
 
 
-#Calcs p value for DF test
-def dickeyfuller_fcn(data,maxlag):
-    #@FORMAT: data = np(values)
-    try:
-        df_fcn = adfuller(data,maxlag)
-        return df_fcn[1]
-    except:
-        return np.nan
 
 #Calcs p value for Phillips-Perron test for Stationarity
 def pp_test_fcn(data,maxlag):
@@ -141,3 +124,43 @@ class PCAAnalysis():
         lm.fit(X,Y)
         Y_Pred = lm.predict(X_Pred)
         return Y_Pred
+
+
+class RollingTraitStatFcns():
+    #For the Signals_Testing.py getRollingTraitsgetRollingTraits fcn. Composed of statistic functions that take in an array and outputs a single statistic.
+    # @FORMAT: data = np.array(price, column1, column2, etc)
+
+    def __init__(self):
+        pass
+
+    # Calcs only correlations, get only the ith lags
+    def acf_fcn_ith_cor(self,data, ith=2, lags=4, alpha=.05):
+        #Takes only the first column, the price column
+        price_data = data[:,0]
+
+        try:
+            acfvalues, confint, qstat, pvalues = acf(price_data, nlags=lags, qstat=True, alpha=alpha)
+            result = acfvalues
+            return result[ith]
+        except:
+            return np.nan
+
+    # Calcs only p value of the acf, get only the ith lag
+    def acf_fcn_ith_cor_pval(self,data, ith=2, lags=4, alpha=.05):
+        #Takes only the first column, the price column
+        price_data = data[:,0]
+        try:
+            acfvalues, confint, qstat, pvalues = acf(price_data, nlags=lags, qstat=True, alpha=alpha)
+            result = pvalues
+            return result[ith]
+        except:
+            return np.nan
+
+
+
+    # Calcs p value for DF test, low p value means it's likely to have autocorrelations
+    def dickeyfuller_fcn(self, data, maxlag=1):
+        # Takes only the first column, the price column
+        price_data = data[:, 0]
+        df_fcn = adfuller(price_data, maxlag)
+        return df_fcn[1]

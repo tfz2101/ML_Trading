@@ -11,7 +11,7 @@ from statsmodels.tsa.stattools import acf,pacf, adfuller
 from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
-from Stat_Fcns import dickeyfuller_fcn,acf_fcn_highestlag,acf_fcn_highestlag_P_Val
+from Stat_Fcns import acf_fcn_highestlag,acf_fcn_highestlag_P_Val
 
 
 #Computes hit ratio for rolling n trades
@@ -160,6 +160,26 @@ def calcSignalCorrelation(data):
     newData = data.dropna()
     corr = data.corr()
     return corr, 1.0*newData.shape[0]/data.shape[0]
+
+
+#Applies each 'fcn' to a rolling block of data
+def getRollingTraits(data,fcn_list,gap=5,*args,**kwargs):
+    #@FORMAT: data = df(price,index=dates) - Only Price Column
+    #@FYI: Each 'fcn' needs to be able to take 1D numpy array and outputs one value
+
+    values = data.values
+    traits_data = pd.DataFrame(index=data.index.values, columns=range(0, len(fcn_list)))
+
+    for i in range(gap,traits_data.shape[0],1):
+        block_values = values[(i-gap):i,:]
+        stats = []
+        for fcn in fcn_list:
+            stats.append(fcn(block_values))
+        traits_data.loc[traits_data.index.values[i]] = stats
+
+    #@RETURNS: traits_df = df(traits,index=dates)
+    return traits_data
+
 
 
 
