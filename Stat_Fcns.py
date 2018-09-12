@@ -4,7 +4,6 @@ import datetime as dt
 import time as time
 import os
 
-from pykalman import KalmanFilter
 import arch.unitroot as UnitRoot
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf,pacf, adfuller
@@ -12,6 +11,7 @@ from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
 from scipy.stats import anderson
+from nolds import hurst_rs
 
 def adTest(data):
     #@FORMAT: data = np(values)
@@ -164,3 +164,7 @@ class RollingTraitStatFcns():
         price_data = data[:, 0]
         df_fcn = adfuller(price_data, maxlag)
         return df_fcn[1]
+
+    def hurstExp(self, data):
+        price_data = data[:,0]
+        return hurst_rs(price_data)

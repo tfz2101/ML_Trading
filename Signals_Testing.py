@@ -190,28 +190,3 @@ def write(datadf, path, tab="Sheet1"):
     writer.save()
 
 
-
-
-
-DATA_PATH = "L:\Trade_Data.xlsx"
-TAB_NAME = "CMOs"
-WRITE_PATH = "L:\Trade_Output3.xlsx"
-TAB = 'Output'
-
-'''
-file  = pd.ExcelFile(DATA_PATH)
-data = file.parse(TAB_NAME)
-data = data.dropna(axis=0)
-pcatool = PCAAnalysis(data)
-'''
-
-'''
-pcatool.getPCA(3)
-lincomp = pcatool.createLinearComponent()
-X = lincomp.transpose()
-print(X)
-Y = data.values.transpose()[0]
-print(Y)
-Y_Pred = pcatool.createLM(X,Y,X)
-print(Y_Pred)
-'''
