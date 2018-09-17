@@ -168,3 +168,8 @@ class RollingTraitStatFcns():
     def hurstExp(self, data):
         price_data = data[:,0]
         return hurst_rs(price_data)
+
+
+
+    def getEntropy(self, data):
+        pass
