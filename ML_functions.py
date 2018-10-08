@@ -66,15 +66,6 @@ def kmeans_best_fit_cluster_labels(data):
 
 #Rolling ML Methods
 #---------------------------------------------------------------------------------------
-def getSKLearnModel(Y,X,model,**kwargs):
-    model = model(**kwargs)
-    model.fit(X,Y)
-    return model
-
-def getSKLearnModelPredictions(model, X_test):
-    Y_test = model.predict(X_test)
-    return Y_test
-
 #Fits a ML model on a rolling basis for a given lookback and makes an prediction based on it for time T
 def getBlendedSignal(data,ml_model, gap=60,**kwargs):
     #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest

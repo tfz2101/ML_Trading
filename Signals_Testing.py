@@ -4,7 +4,6 @@ import datetime as dt
 import time as time
 import os
 
-from pykalman import KalmanFilter
 import arch.unitroot as UnitRoot
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf,pacf, adfuller
@@ -12,66 +11,10 @@ from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
 from Stat_Fcns import acf_fcn_highestlag,acf_fcn_highestlag_P_Val
+from openpyxl import load_workbook
 
 
-#Computes hit ratio for rolling n trades
-def getLastNHitRatio(data, n, hitInd, acceptableValues=[0,1]):
-    #@FORMAT: df[dates, hitOrNots]
-    out = []
-    temp = []
-    count = 0
-    for i in range(0,data.shape[0]):
-        if data.iloc[i,hitInd] in acceptableValues:
-            count = count +1
-            temp.append(data.values[i,:])
-        if count >= n:
-            hr = np.average(temp,axis=0)[hitInd]
-            out.append([data.values[i,0],hr])
-            count = 0
-            temp = []
 
-    out = pd.DataFrame(out)
-    #RETURNS: df[date, hit ratio for rolling n trades]
-    return out
-
-#Computes hit ratio for rolling n trades, computes s.t. that it finds n valid trades first
-def getLastNHitRatioEveryLine(data, n, hitInd, acceptableValues=[0,1]):
-    #@FORMAT: df[dates, hitOrNots]
-    out = data.values
-    avgs = np.empty((data.shape[0],1))
-    avgs[:] = np.nan
-    for i in range(0,data.shape[0]):
-        count = 0
-        temp = []
-        j = i
-        while j < data.shape[0]:
-            if out[j,hitInd] in acceptableValues:
-                count = count +1
-                temp.append(out[j,:])
-            if count >= n:
-                hr = np.average(temp,axis=0)[hitInd]
-                avgs[i]=hr
-                break
-            j = j +1
-
-    print(avgs)
-    out =  data.copy()
-    out["Last Trades %"] = avgs
-    print("out",out)
-    #RETURNS: df[date, hit ratio for rolling n trades]
-    return out
-
-#Computes hit ratio for rolling blocks of n lines. Does NOT compute for every line on a rolling basis.
-def getNBlockHitRatio(data, gap):
-    #@FORMAT: series[hitOrNots,index=dates]
-    out = []
-    for i in range(0,data.shape[0],gap):
-        hr = data.iloc[i:(i+gap)].mean(skipna=True)*1.0
-        out.append([data.index.values[i],hr])
-
-    out = pd.DataFrame(out)
-    #RETURNS: df[date, hit ratio for rolling n trades]
-    return out
 
 
 #Applies 'fcn' to every block. It doesn't roll for every datapoint
@@ -112,47 +55,6 @@ def rolling_data_fcn2(data,fcn,gap=5,*args,**kwargs):
 
 
 
-#Returns rolling stats for dickey fuller test, p val for the best fit lag for ACF, realized volatility,
-def getDataTraits(data,gap):
-    #@FORMAT: data = df(data,index=dates)
-    kwargs ={"maxlag":1}
-    rolling_df_data = rolling_block_data_fcn(data,dickeyfuller_fcn,gap=gap,**kwargs)
-    rolling_df_data = pd.DataFrame(rolling_df_data)
-
-    kwargs ={"lags":1}
-    rolling_acf_data = rolling_block_data_fcn(data,acf_fcn_highestlag,gap=gap,**kwargs)
-    rolling_acf_data= pd.DataFrame(rolling_acf_data)
-
-
-    rolling_rl_data = rolling_block_data_fcn(data,rl_fcn,gap=gap)
-    rolling_rl_data = pd.DataFrame(rolling_rl_data)
-
-    output = pd.DataFrame(rolling_df_data.iloc[:,1].tolist(),columns=['Dickey Fuller'],index=rolling_df_data.iloc[:,0])
-    output['Autocorrelation'] = rolling_acf_data.iloc[:,1].tolist()
-    output['RL'] = rolling_rl_data.iloc[:,1].tolist()
-    #@RETURNS: df(df_value, [acf_corr, lag_number], rl_data],index=dates]
-    return output
-
-def getDataTraitsOnlyPValue(data,gap):
-    #Like getDataTraitsOnly but returns only the P Values for the ACF analysis, excludes the best fit lag number
-    #@FORMAT: data = df(data,index=dates)
-    kwargs ={"maxlag":1}
-    rolling_df_data = rolling_block_data_fcn(data,dickeyfuller_fcn,gap=gap,**kwargs)
-    rolling_df_data = pd.DataFrame(rolling_df_data)
-
-    kwargs ={"lags":1}
-    rolling_acf_data = rolling_block_data_fcn(data,acf_fcn_highestlag_P_Val,gap=gap,**kwargs)
-    rolling_acf_data= pd.DataFrame(rolling_acf_data)
-
-
-    rolling_rl_data = rolling_block_data_fcn(data,rl_fcn,gap=gap)
-    rolling_rl_data = pd.DataFrame(rolling_rl_data)
-
-    output = pd.DataFrame(rolling_df_data.iloc[:,1].tolist(),columns=['Dickey Fuller'],index=rolling_df_data.iloc[:,0])
-    output['Autocorrelation'] = rolling_acf_data.iloc[:,1].tolist()
-    output['RL'] = rolling_rl_data.iloc[:,1].tolist()
-    #@RETURNS: df(df_value, [acf_corr, lag_number], rl_data],index=dates]
-    return output
 
 #Calculate correlation when two signals only have for certain dates, this calculates the correlation when the two sigals do overlap.
 def calcSignalCorrelation(data):
@@ -183,10 +85,19 @@ def getRollingTraits(data,fcn_list,gap=5,*args,**kwargs):
 
 
 
-def write(datadf, path, tab="Sheet1"):
+#Makes a new excel sheet and writes to it
+def write_new(datadf, path, tab="Sheet1"):
     WRITE_PATH = path
     writer = pd.ExcelWriter(WRITE_PATH, engine='xlsxwriter')
     datadf.to_excel(writer, sheet_name=tab)
     writer.save()
 
+#Takes existing excel file and writes to specified sheet
+def write(datadf, path, tab="Sheet1"):
+    WRITE_PATH = path
+    book = load_workbook(path)
+    writer = pd.ExcelWriter(WRITE_PATH, engine='openpyxl')
+    writer.book = book
+    datadf.to_excel(writer, sheet_name=tab)
+    writer.save()
 
