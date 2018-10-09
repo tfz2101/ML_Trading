@@ -24,15 +24,19 @@ def getNextExecutionLevels(data):
     for i in range(0, data.shape[0]):
         buy_found = False
         sell_found = False
-        for ii in range(i, data.shape[0]):
+        for ii in range(i, data.shape[0]-1):
+            if not buy_found:
+                if data.iloc[ii+1,0] < data.iloc[ii,0]:
+                    data_out.ix[i, 'next_buy'] = data.iloc[ii,0]
+                    buy_found = True
+
+            if not sell_found:
+                if data.iloc[ii+1,0] > data.iloc[ii,0]:
+                    data_out.ix[i, 'next_sell'] = data.iloc[ii,0]
+                    sell_found = True
+
             if buy_found and sell_found:
                 break
-            if data.iloc[ii+1,0] < data.iloc[ii,0]:
-                data_out.ix[i, 'next_buy'] = data.iloc[ii,0]
-                buy_found = True
-            if data.iloc[ii+1,0] > data.iloc[ii,0]:
-                data_out.ix[i, 'next_sell'] = data.iloc[ii,0]
-                sell_found = True
     #@RETURN: data = df(prices, ..., next_buy, next_sell, index=dates)
     return data_out
 
