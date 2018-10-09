@@ -14,8 +14,27 @@ from Stat_Fcns import acf_fcn_highestlag,acf_fcn_highestlag_P_Val
 from openpyxl import load_workbook
 
 
+def getTripleBarrier(data):
+    #@FORMAT: data = df(prices,  index=dates)
+    pass
 
-
+def getNextExecutionLevels(data):
+    #@FORMAT: data = df(prices,... index=dates)
+    data_out = data.copy()
+    for i in range(0, data.shape[0]):
+        buy_found = False
+        sell_found = False
+        for ii in range(i, data.shape[0]):
+            if buy_found and sell_found:
+                break
+            if data.iloc[ii+1,0] < data.iloc[ii,0]:
+                data_out.ix[i, 'next_buy'] = data.iloc[ii,0]
+                buy_found = True
+            if data.iloc[ii+1,0] > data.iloc[ii,0]:
+                data_out.ix[i, 'next_sell'] = data.iloc[ii,0]
+                sell_found = True
+    #@RETURN: data = df(prices, ..., next_buy, next_sell, index=dates)
+    return data_out
 
 #Applies 'fcn' to every block. It doesn't roll for every datapoint
 def rolling_block_data_fcn(data,fcn,gap=5,*args,**kwargs):
