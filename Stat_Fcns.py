@@ -12,7 +12,7 @@ from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
 from scipy.stats import anderson
 from nolds import hurst_rs
-import pyentrp
+
 
 def adTest(data):
     #@FORMAT: data = np(values)
