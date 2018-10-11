@@ -10,7 +10,6 @@ from statsmodels.tsa.stattools import acf,pacf, adfuller
 from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
-from Stat_Fcns import acf_fcn_highestlag,acf_fcn_highestlag_P_Val
 from openpyxl import load_workbook
 
 
