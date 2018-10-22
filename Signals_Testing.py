@@ -11,7 +11,7 @@ from operator import itemgetter
 from sklearn import linear_model as LM
 from sklearn.decomposition import PCA
 from openpyxl import load_workbook
-
+import openpyxl
 
 def getTripleBarrier(data):
     #@FORMAT: data = df(prices,  index=dates)
@@ -105,7 +105,7 @@ def getRollingTraits(data,fcn_list,gap=5,*args,**kwargs):
     return traits_data
 
 
-
+#WRITING TO EXCEL FUNCTIONS
 
 #Makes a new excel sheet and writes to it
 def write_new(datadf, path, tab="Sheet1"):
@@ -117,6 +117,23 @@ def write_new(datadf, path, tab="Sheet1"):
 #Takes existing excel file and writes to specified sheet
 def write(datadf, path, tab="Sheet1"):
     WRITE_PATH = path
+    book = load_workbook(path)
+    writer = pd.ExcelWriter(WRITE_PATH, engine='openpyxl')
+    writer.book = book
+    datadf.to_excel(writer, sheet_name=tab)
+    writer.save()
+
+#Takes existing excel file and overwrites the existing sheet
+def write_overwritesheet(datadf, path, tab="Sheet1"):
+    #Workbook must have more than 1 worksheets
+    WRITE_PATH = path
+
+    #First delete the sheet
+    workbook = openpyxl.load_workbook(WRITE_PATH)
+    ws = workbook[tab]
+    workbook.remove(ws)
+    workbook.save(WRITE_PATH)
+
     book = load_workbook(path)
     writer = pd.ExcelWriter(WRITE_PATH, engine='openpyxl')
     writer.book = book
