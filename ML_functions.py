@@ -67,24 +67,26 @@ def kmeans_best_fit_cluster_labels(data):
 #Rolling ML Methods
 #---------------------------------------------------------------------------------------
 #Fits a ML model on a rolling basis for a given lookback and makes an prediction based on it for time T
-def getBlendedSignal(data,ml_model, gap=60,**kwargs):
+def getBlendedSignal(data,ml_model, gap=60,Y_index=1, **kwargs):
     #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest
+    #Kwaargs contains the parameters for the ML function
+
+    #If Y_index is blank, assume Y is in the first column
+    Y = data.iloc[:, 0].values
+
     dates = data.index.values
-    Y = data.iloc[:,0].values
+
     X = data.drop(data.columns[[0]],axis=1).values
     out = []
 
     for i in range(gap,X.shape[0],1):
         X_ = X[(i-gap):i]
-        print('X TRAIN',X_)
         Y_ = Y[(i-gap):i]
-        print('Y_ TRAIN',Y_)
         X_test = X[i]
         X_test = X_test.reshape(1,-1)
         Y_test = Y[i]
 
-        #model = ml_model(**kwargs)
-        model = ml_model()
+        model = ml_model(**kwargs)
         model.fit(X_, Y_)
 
         pred = model.predict(X_test)
@@ -93,7 +95,9 @@ def getBlendedSignal(data,ml_model, gap=60,**kwargs):
     #@RETURNS: [date, Y, Y_pred]
     return out
 
+'''  
 def getBlendedSignalKeepColumns(data,colKeepName,ml_model, gap=60,**kwargs):
+  
     #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest
     dates = data.index.values
     Y = data.iloc[:,0].values
@@ -126,7 +130,7 @@ def getBlendedSignalKeepColumns(data,colKeepName,ml_model, gap=60,**kwargs):
 
     #@RETURNS: [date, Y, Y_pred]
     return out
-
+'''
 
 #Main ML rollthrough time method
 def rollingMultivariateML(data, gap, fcn, **kwargs):
@@ -195,24 +199,7 @@ def crossValidate(X, Y, trainSplit, model_fcn, **model_kwargs):
     return [out]
 
 
-#Takes a train/test split of the X and Y and spits back the feature importance of the features
-def featureImportance(X, Y, trainSplit, model_fcn, **model_kwargs):
-    #@FORMAT: X = array, Y = array
-    x_train, x_test, y_train, y_test = trainTestSplit(X, Y, trainSplit)
 
-    try:
-        model = model_fcn(**model_kwargs).fit(x_train, y_train)
-    except:
-        #@TODO:**KWARGS ARE NOT BEING PASSED IF EXCEPTION IS THROWN, FIX THIS!
-        #model_kwargs = model_kwargs['model_kwargs']
-        #model = model_fcn(**model_kwargs).fit(x_train, y_train)
-        model = model_fcn().fit(x_train, y_train)
-
-
-    out = model.feature_importances_
-
-    #@RETURN: list
-    return out
 
 #Combines the crossValidates function as well as gives a prediction for the last X row. Answers the question - if a ML
 #function has been pretty accurate in OOS backtest, does it a better predictor for this current row?
