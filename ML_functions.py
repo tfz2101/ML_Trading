@@ -95,42 +95,6 @@ def getBlendedSignal(data,ml_model, gap=60,Y_index=1, **kwargs):
     #@RETURNS: [date, Y, Y_pred]
     return out
 
-'''  
-def getBlendedSignalKeepColumns(data,colKeepName,ml_model, gap=60,**kwargs):
-  
-    #@FORMAT: data = df(Y,X1,X2...,index=dates), dates goes from earliest to latest
-    dates = data.index.values
-    Y = data.iloc[:,0].values
-    X = data.drop(data.columns[[0]],axis=1)
-
-    out = []
-    keepCol = X[colKeepName].values
-    X = X.drop([colKeepName],axis=1).values
-
-    #TODO: CHANGE THE END POINT BACK!!!1
-    #for i in range(gap,X.shape[0],1):
-    for i in range(gap,3,1):
-        X_ = X[(i-gap):i]
-        print('date',dates[i-gap])
-        print('X_ ',X_)
-        Y_ = Y[(i-gap):i]
-        print('Y)',Y_)
-        print('date',dates[i])
-        X_test = X[i]
-        X_test = X_test.reshape(1,-1)
-        Y_test = Y[i]
-        print('X TEST',X_test)
-        print('Y TEST',Y_test)
-        #model = ml_model(**kwargs)
-        model = ml_model()
-        model.fit(X_, Y_)
-
-        pred = model.predict(X_test)
-        out.append([dates[i],keepCol[i],Y_test,pred[0]])
-
-    #@RETURNS: [date, Y, Y_pred]
-    return out
-'''
 
 #Main ML rollthrough time method
 def rollingMultivariateML(data, gap, fcn, **kwargs):
@@ -152,7 +116,7 @@ def rollingMultivariateML(data, gap, fcn, **kwargs):
 
         out.append([line])
 
-    #@RETURNS: df(dates, ouput1, output2, ...])
+    #@RETURNS: list[date, fcn_output]
     return out
 
 
