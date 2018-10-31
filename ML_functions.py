@@ -122,26 +122,14 @@ def rollingMultivariateML(data, gap, fcn, **kwargs):
     #@RETURNS: list[date, fcn_output]
     return out
 
-
-def trainTestSplit(X, Y, trainSplit):
-    #@FORMAT: X = array, Y = array
-
-    trainSplit = 1- trainSplit
-
-
-    splitInd = int(X.shape[0] * trainSplit)
-    try:
-        x_test = X[0:splitInd,:]
-        x_train = X[splitInd:X.shape[0],:]
-    except:
-        x_test = X[0:splitInd]
-        x_test = x_test.reshape(-1,1)
-        x_train = X[splitInd:len(X)]
-        x_train = x_train.reshape(-1,1)
-
-
-    y_test = Y[0:splitInd]
-    y_train = Y[splitInd:len(Y)]
+#Unshuffled Train/Test Split on data
+def trainTestSplit(X, Y, trainsplit=0.7):
+    #@FORMAT: X = df, Y = df
+    splitInd = int(X.shape[0] * trainsplit)
+    x_train = X.iloc[0:splitInd,:]
+    x_test = X.iloc[splitInd:X.shape[0],:]
+    y_train = Y.iloc[0:splitInd]
+    y_test = Y.iloc[splitInd:X.shape[0]]
     return x_train, x_test, y_train, y_test
 
 
