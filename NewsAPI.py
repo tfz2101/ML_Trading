@@ -10,25 +10,42 @@ import json
 import requests
 from textblob import TextBlob
 from tinydb import TinyDB, Query
+from newsapi import NewsApiClient
 
-KEY = '2fbdda0382df29cae0bfaca9638c457e17089aeb'
+
+KEY = '65af39f3a557484fa8d644068a161070'
 FILTER = '&currencies=BTC&filter=important'
 #See available exchanges and currencies
 
-db = TinyDB('CryptoPanic_DB.json')
+db = TinyDB('NewsAPI_DB.json')
+
+newsapi = NewsApiClient(api_key=KEY)
+sources = newsapi.get_sources()
+print(sources)
+
+articles = newsapi.get_everything(q='bitcoin',
+                                      sources='crypto-coins-news',
+                                      #domains='bbc.co.uk,techcrunch.com',
+                                      from_param='2018-11-15',
+                                      to='2018-11-16',
+                                      language='en',
+                                      sort_by='relevancy',
+                                      page=2)
+
+articles = articles['articles']
+for article in articles:
+    print(article['title'])
+    print(article['description'])
 
 
+'''
 for i in range(0, 2):
 
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S%z')
-    #Important Cateory of news sentiment
     POLARITY = []
     POLARITY_ADJ = []
     url = "https://cryptopanic.com/api/posts/?auth_token=" + KEY + FILTER
     response = requests.get(url).json()
     results = response['results']
-    print(results)
-    print('number of items', len(results))
     for item in results:
         title = item['title']
         sentiment = TextBlob(title).sentiment
@@ -37,13 +54,14 @@ for i in range(0, 2):
 
     pol_mean = np.array(POLARITY).mean()
     pol_adj_mean  = np.array(POLARITY_ADJ).mean()
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S%z')
 
 
     print(now)
     db.insert({'designation': 0, 'time': now, 'avg_polarity': pol_mean, 'avg_polarity_adj': pol_adj_mean})
 
-    time.sleep(300)
-
+    time.sleep(50)
+'''
 
 
 '''
