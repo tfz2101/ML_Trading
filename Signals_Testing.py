@@ -77,15 +77,6 @@ def rolling_data_fcn2(data,fcn,gap=5,*args,**kwargs):
 
 
 
-
-#Calculate correlation when two signals only have for certain dates, this calculates the correlation when the two sigals do overlap.
-def calcSignalCorrelation(data):
-    #@FORMAT: data = df(signal1_hr,signal2_hr,index=dates)
-    newData = data.dropna()
-    corr = data.corr()
-    return corr, 1.0*newData.shape[0]/data.shape[0]
-
-
 #Applies each 'fcn' to a rolling block of data
 def getRollingTraits(data,fcn_list,gap=5,*args,**kwargs):
     #@FORMAT: data = df(price,index=dates) - Only Price Column
