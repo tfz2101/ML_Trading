@@ -13,9 +13,25 @@ from sklearn.decomposition import PCA
 from openpyxl import load_workbook
 import openpyxl
 
-def getTripleBarrier(data):
-    #@FORMAT: data = df(prices,  index=dates)
-    pass
+#Takes a df of executeable prices and calcs the triple barrier label returns for each row
+def getTripleBarrierLabel(data, lookback, time_limit, upper_std, lower_std):
+    #@FORMAT: data = df(exec_prices,  index=dates)
+    #time_limit is how long the algo waits before calculating the return. This will calc if neither upper bound or lower bound was reached.
+    data_out = data.copy()
+    for i in range(lookback, data_out.shape[0]):
+        block = data_out.iloc[0, (i-lookback):i]
+        st_dev = block.std()
+        assert type(st_dev) == float, "std is not a number, check again dude"
+        end = min(i + time_limit, data_out.shape[0]) #Walk forward is min of time limit or the end of the array
+        for t in range(i, end):
+            ret = (data_out.iloc[0, t] - data_out.iloc[0, i]) / data_out.iloc[0, i]
+            if ret >= st_dev * upper_std or ret <= st_dev * lower_std:
+                data_out.ix['triple_label', i] = ret
+                break
+        data_out.ix['triple_label', i] = (data_out.iloc[0, t] -  data_out.iloc[0, i]) / data_out.iloc[0, i]  #Neither upper or lower board was achieved, calc the time_limit return
+
+    #@RETURN: data = df(prices, triple_label, index=dates)
+    return data_out
 
 def getNextExecutionLevels(data):
     #@FORMAT: data = df(prices,... index=dates)
