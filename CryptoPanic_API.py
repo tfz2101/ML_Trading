@@ -16,10 +16,12 @@ FILTER = '&currencies=BTC&filter=important'
 #See available exchanges and currencies
 
 db = TinyDB('CryptoPanic_DB.json')
+designation = 1
 
 #RECORD SENTIMENT/POSITIVES/NEGATIVES OF LAST 20 IMPORTANT ARTICLES IN 5 MIN INTERNVALS
 INTERVAL = 300
 
+'''
 for i in range(0, 5000):
 
     #Important Cateory of news sentiment
@@ -57,11 +59,11 @@ for i in range(0, 5000):
     db.insert({'designation': 0, 'time': now, 'latest_created_time': latest_created_time, 'avg_positives': avg_positives, 'avg_negatives': avg_negatives, 'avg_polarity': pol_mean, 'avg_polarity_adj': pol_adj_mean})
 
     time.sleep(INTERVAL)
-
+'''
 
 #RETRIEVE ALL RECORDS
-'''
 User = Query()
 search_res = db.search(User.designation == 0)
+search_res = pd.DataFrame(search_res)
 print(search_res)
-'''
+st.write_new(search_res, 'CyptoPanic_Sentiment_Data.xlsx', 'data')
