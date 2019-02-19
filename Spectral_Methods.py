@@ -3,6 +3,13 @@ import numpy as np
 import datetime as dt
 import time as time
 import os
+import sys
+
+sys.path.append('../')
+from ML_Trading import ML_functions as mlfcn
+from ML_Trading import Signals_Testing as st
+from ML_Trading import Stat_Fcns as sf
+
 
 from numpy import fft
 
@@ -46,12 +53,19 @@ x = np.array(
      1446, 1210, 1122, 1259, 1181, 1035, 1325, 1481, 1278, 769, 911, 876, 877, 950, 1383, 980, 705, 888, 877, 638,
      1065, 1142, 1090, 1316, 1270, 1048, 1256, 1009, 1175, 1176, 870, 856, 860])
 
-n_predict = 10
+data_file = 'bitmex_BTC_px_changes.xlsx'
+data = pd.read_excel(data_file,'changes',index_col='Dates')
+change_data = data['changes']
+change_data = change_data.dropna()
+x =  change_data.values
+print(x)
+
+
+
+n_predict = 1000
 
 extrapolation = fourierExtrapolation(x, n_predict)
 print(extrapolation)
 
-    #pl.plot(np.arange(0, extrapolation.size), extrapolation, 'r', label='extrapolation')
-    #pl.plot(np.arange(0, x.size), x, 'b', label='x', linewidth=3)
-    #pl.legend()
-    #pl.show()
+out_predictions = pd.DataFrame(extrapolation)
+st.write(out_predictions, data_file, 'predictions')
